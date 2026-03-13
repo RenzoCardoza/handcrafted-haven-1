@@ -15,7 +15,7 @@ Handcrafted Haven is an innovative web application that aims to provide a platfo
 - Node.js (pnpm)
 
 
-### Team Members:  
+## Team Members:  
 - Fernando Costa 
 - Erik German 
 - Bridger Fronk 
