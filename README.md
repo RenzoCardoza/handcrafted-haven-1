@@ -14,6 +14,16 @@ Handcrafted Haven is an innovative web application that aims to provide a platfo
 ### Back-end
 - Node.js (pnpm)
 
+## Typography and Color Schema
+### Typography
+- IBM Plex Serif (Serif)
+- Baloo 2 (Sans-serif)
+
+### Color Schema
+- \#40390E (To be defined)
+- \#E3E7D3 (To be defined)
+- \#BDC2BF (To be defined)
+- \#989C94 (To be defined)
 
 ## Team Members:  
 - Fernando Costa 
