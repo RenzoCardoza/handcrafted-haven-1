@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession, signIn } from "next-auth/react";
 import { z } from "zod/v4";
 
 const reviewSchema = z.object({
@@ -9,8 +10,8 @@ const reviewSchema = z.object({
 });
 
 export default function ReviewForm({ productId }: { productId: string }) {
-  // TODO: replace with real auth check via next-auth useSession()
-  const isLoggedIn = false;
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -20,9 +21,12 @@ export default function ReviewForm({ productId }: { productId: string }) {
   if (!isLoggedIn) {
     return (
       <p className="text-gray-500 text-sm">
-        <a href="#" className="text-green-600 hover:underline">
-          Log in
-        </a>{" "}
+        <button
+          onClick={() => signIn("github")}
+          className="text-green-600 hover:underline"
+        >
+          Sign in with GitHub
+        </button>{" "}
         to leave a review.
       </p>
     );

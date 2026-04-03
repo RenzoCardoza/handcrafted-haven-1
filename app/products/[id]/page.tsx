@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { products, reviews } from "@/app/lib/placeholder-data";
 import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
-import Link from "next/link";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
 
 export default async function ProductPage({
   params,
@@ -23,41 +24,7 @@ export default async function ProductPage({
 
   return (
     <main className="flex flex-col min-h-screen">
-      {/* Header (same as homepage for now — extract to a shared component later) */}
-      <header className="border-b bg-white">
-        <div className="flex items-center justify-between px-6 py-4">
-          <Link href="/" className="font-bold text-xl">
-            Handcrafted Haven
-          </Link>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="border rounded px-3 py-1 w-1/3"
-          />
-          <div className="space-x-4">
-            <Link href="#" className="text-gray-700 hover:text-green-600">
-              Login
-            </Link>
-            <Link href="#" className="text-gray-700 hover:text-green-600">
-              Sign Up
-            </Link>
-          </div>
-        </div>
-        <nav className="flex justify-center font-body space-x-8 bg-gray-100 py-2">
-          <Link href="/" className="hover:text-green-600">
-            Home
-          </Link>
-          <Link href="/shop" className="hover:text-green-600">
-            Shop
-          </Link>
-          <Link href="/categories" className="hover:text-green-600">
-            Categories
-          </Link>
-          <Link href="/sell" className="hover:text-green-600">
-            Sell
-          </Link>
-        </nav>
-      </header>
+      <Header />
 
       {/* Product detail */}
       <section className="max-w-4xl mx-auto w-full px-6 py-10">
@@ -104,23 +71,7 @@ export default async function ProductPage({
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-6 mt-auto">
-        <div className="flex justify-center space-x-6">
-          <a href="#" className="hover:text-green-400">
-            About
-          </a>
-          <a href="#" className="hover:text-green-400">
-            Contact
-          </a>
-          <a href="#" className="hover:text-green-400">
-            Sell
-          </a>
-          <a href="#" className="hover:text-green-400">
-            FAQ
-          </a>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
