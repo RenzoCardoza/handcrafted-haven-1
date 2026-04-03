@@ -39,7 +39,7 @@ export const reviews = [
     rating: 5,
     comment: "Love this mug! The glaze color is even better in person.",
     reviewerName: "Alex K.",
-    date: "2025-03-10",
+    date: "2026-04-02",
   },
   {
     id: "2",
@@ -47,7 +47,7 @@ export const reviews = [
     rating: 4,
     comment: "Nice quality. A little smaller than I expected but still good.",
     reviewerName: "Sam R.",
-    date: "2025-03-15",
+    date: "2026-04-02",
   },
   {
     id: "3",
@@ -55,7 +55,7 @@ export const reviews = [
     rating: 5,
     comment: "Super warm and the color is exactly what was shown in the photo.",
     reviewerName: "Jordan M.",
-    date: "2025-02-20",
+    date: "2026-04-02",
   },
   {
     id: "4",
@@ -63,6 +63,6 @@ export const reviews = [
     rating: 4,
     comment: "Solid board. The walnut grain looks great on my counter.",
     reviewerName: "Casey L.",
-    date: "2025-01-05",
+    date: "2026-04-02",
   },
 ];
