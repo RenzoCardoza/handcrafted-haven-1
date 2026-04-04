@@ -104,6 +104,7 @@ async function seedProducts(sql: any, artisanResults: any[]) {
         `)
     )).map(res => res[0]);
 
+    console.log("artisanResults:", artisanResults);
     return insertedProducts;
 }
 
@@ -118,24 +119,24 @@ async function seedReviews(sql: any, userResults: any[], productResults: any[]) 
             user_id UUID NOT NULL,
             product_id UUID NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-            FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+            FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+            UNIQUE (user_id, product_id)
         );
     `;
-
+    
     const insertedReviews = (await Promise.all(
         reviews.map((review) => sql`
             INSERT INTO reviews (
                 rating,
                 comment,
                 user_id,
-                product_id,
-                created_at
+                product_id
             )
             VALUES (
                 ${review.rating},
                 ${review.comment},
                 ${userResults[review.userIndex].id},
-                ${productResults[review.productIndex].id},
+                ${productResults[review.productIndex].id}
             )
             ON CONFLICT (user_id, product_id) DO NOTHING
             RETURNING id
@@ -148,9 +149,13 @@ async function seedReviews(sql: any, userResults: any[], productResults: any[]) 
 export async function GET() {
     try {
         await sql.begin(async (tx) => {
+            console.log('seeding users');
             const userResults = await seedUsers(tx);
+            console.log('seeing artisans');
             const artisanResults = await seedArtisans(tx);
+            console.log('seeding products');
             const productResults = await seedProducts(tx, artisanResults);
+            console.log('seeding reviews');
             await seedReviews(tx, userResults, productResults);
         });
 

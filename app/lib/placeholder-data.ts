@@ -10,6 +10,12 @@ const users = [
         email: 'localuser@hotmail.com',
         password: 'password12',
         role: 'user'
+    },
+    {
+        name: "testUser",
+        email: "testuser@haven.com",
+        password: "havenproject1",
+        role: "user"
     }
 ];
 
@@ -44,9 +50,9 @@ const products = [
     {
         name: "Wooden Bowl",
         material: "Wood",
-        price_url: 30,
+        price: 30,
         description: "Minimalist wooden bowl.",
-        image: "/products/wooden-bowl.png",
+        image_url: "/products/wooden-bowl.png",
         artisanIndex: 2,
     },
     {
