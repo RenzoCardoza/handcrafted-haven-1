@@ -30,7 +30,7 @@ const products = [
         material: "Clay",
         price: 25,
         description: "Handmade clay vase.",
-        image_url: "vase.jpg",
+        image_url: "/products/clay-vase.png",
         artisanIndex: 0,
     },
     { 
@@ -38,7 +38,7 @@ const products = [
         material: "Leather",
         price: 40,
         description: "Durable leather wallet.",
-        image_url: "wallet.jpg",
+        image_url: "/products/leather-wallet.png",
         artisanIndex: 1,
     },
     {
@@ -46,7 +46,7 @@ const products = [
         material: "Wood",
         price_url: 30,
         description: "Minimalist wooden bowl.",
-        image: "bowl.jpg",
+        image: "/products/wooden-bowl.png",
         artisanIndex: 2,
     },
     {
@@ -54,7 +54,7 @@ const products = [
         material: "Glass",
         price: 50,
         description: "Elegant glass necklace.",
-        image_url: "necklace.jpg",
+        image_url: "/products/glass-necklace.png",
         artisanIndex: 3,
     },
     {
@@ -62,7 +62,7 @@ const products = [
         material: "Textile",
         price: 120,
         description: "Handwoven rug.",
-        image_url: "rug.jpg",
+        image_url: "/products/woven-rug.png",
         artisanIndex: 4,
     },
     {
@@ -70,7 +70,7 @@ const products = [
         material: "Metal",
         price: 200,
         description: "Abstract metal sculpture.",
-        image_url: "sculpture.jpg",
+        image_url: "/products/metal-sculpture.png",
         artisanIndex: 5,
     },
     {
@@ -78,7 +78,7 @@ const products = [
         material: "Ceramic",
         price: 20,
         description: "Colorful earrings.",
-        image_url: "earrings.jpg",
+        image_url: "/products/painted-earrings.png",
         artisanIndex: 6,
     },
     {
@@ -86,7 +86,7 @@ const products = [
         material: "Wood",
         price: 60,
         description: "Traditional carved mask.",
-        image_url: "mask.jpg",
+        image_url: "/products/wood-mask.png",
         artisanIndex: 7,
     },
     {
@@ -94,7 +94,7 @@ const products = [
         material: "Clay",
         price: 35,
         description: "Decorative plate.",
-        image_url: "plate.jpg",
+        image_url: "/products/ceramic-plate.png",
         artisanIndex: 0,
     },
     {
@@ -102,7 +102,7 @@ const products = [
         material: "Leather",
         price: 45,
         description: "Handmade belt.",
-        image_url: "belt.jpg",
+        image_url: "/products/leather-belt.png",
         artisanIndex: 1,
     },
 ];
