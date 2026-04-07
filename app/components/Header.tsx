@@ -1,4 +1,3 @@
-// components/Header.tsx
 interface HeaderProps {
   showSearch?: boolean;
   showAuth?: boolean;

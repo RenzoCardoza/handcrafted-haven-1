@@ -1,8 +1,7 @@
 import Image from "next/image";
-import Header from "./ui/Header";
-import Nav from "./ui/Nav";
-import Footer from "./ui/Footer";
-
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
+import Nav from "./components/Nav";
 
 export default function Home() {
   return (
@@ -23,9 +22,11 @@ export default function Home() {
         </div>
         <h1 className="font-heading text-4xl mb-4">Discover Unique Handmade Creations</h1>
         <p className="font-body text-lg mb-6">Support artisans. Find something special.</p>
-        <button className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
-          Browse Collection
-        </button>
+        <a href="./shop">
+          <button className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
+            Browse Collection
+          </button>
+        </a>
       </section>
 
       <Footer />

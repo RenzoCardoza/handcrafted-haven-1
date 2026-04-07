@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Header from "../ui/Header";
-import Nav from "../ui/Nav";
-import Footer from "../ui/Footer";
-import SellerCard from "../ui/SellerCard";
-import ProductForm from "../ui/ProductForm";
-import StarRating from "../ui/StarRating";
-import ProductCard from "../ui/ProductCard";
+import Header from "../components/Header";
+import Nav from "../components/Nav";
+import Footer from "../components/Footer";
+import SellerCard from "../components/SellerCard";
+import ProductForm from "../components/ProductForm";
+import StarRating from "../components/StarRating";
+import ProductCard from "../components/ProductCard";
 
 interface Product {
   id: number;
@@ -27,7 +27,7 @@ export default function TestingPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("/query"); // your API route
+        const res = await fetch("/api/products"); 
         if (!res.ok) throw new Error("Failed to fetch products");
         const data: Product[] = await res.json();
         setProducts(data);
