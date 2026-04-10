@@ -1,16 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 interface ProductFormData {
   name: string;
   description: string;
-  price: number;          // numeric type
+  price: number;
   categoryId: number;
   imageUrl: string;
   sellerId: number;
-  reviewCount?: number;   // optional
-  createdAt?: string;     // optional, usually set by DB
 }
 
 interface ProductFormProps {
@@ -18,7 +17,10 @@ interface ProductFormProps {
   onSubmit: (data: ProductFormData) => void;
 }
 
-export default function ProductForm({ categories, onSubmit }: ProductFormProps) {
+export default function ProductForm({
+  categories,
+  onSubmit,
+}: ProductFormProps) {
   const [formData, setFormData] = useState<ProductFormData>({
     name: "",
     description: "",
@@ -28,15 +30,45 @@ export default function ProductForm({ categories, onSubmit }: ProductFormProps) 
     sellerId: 0,
   });
 
+  async function handleImageUpload(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "handcrafted_haven_products"); // "handcrafted_haven_products" is the Upload Preset I createdin my cloudinary dashboard
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dzzsi0uoo/image/upload", // My cloudinary CloudName is the URL
+      {
+        method: "POST",
+        body: data,
+      }
+    );
+
+    const result = await res.json();
+
+    setFormData((prev) => ({
+      ...prev,
+      imageUrl: result.secure_url,
+    }));
+  }
+
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "price" || name === "categoryId" || name === "sellerId"
+        name === "price" ||
+        name === "categoryId" ||
+        name === "sellerId"
           ? Number(value)
           : value,
     }));
@@ -50,10 +82,16 @@ export default function ProductForm({ categories, onSubmit }: ProductFormProps) 
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 bg-white shadow-md rounded-lg p-6"
+      className="max-w-xl mx-auto space-y-6 bg-white shadow-lg rounded-2xl p-8 border border-gray-200"
     >
+      {/* Title */}
+      <h2 className="text-2xl font-bold text-gray-800">
+        Add New Product
+      </h2>
+
+      {/* Name */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-semibold text-gray-700">
           Product Name
         </label>
         <input
@@ -62,24 +100,29 @@ export default function ProductForm({ categories, onSubmit }: ProductFormProps) 
           value={formData.name}
           onChange={handleChange}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
         />
       </div>
 
+      {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-semibold text-gray-700">
           Description
         </label>
         <textarea
           name="description"
           value={formData.description}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          rows={4}
+          className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
         />
       </div>
 
+      {/* Price */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Price</label>
+        <label className="block text-sm font-semibold text-gray-700">
+          Price
+        </label>
         <input
           type="number"
           name="price"
@@ -87,12 +130,13 @@ export default function ProductForm({ categories, onSubmit }: ProductFormProps) 
           onChange={handleChange}
           required
           step="0.01"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
         />
       </div>
 
+      {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-semibold text-gray-700">
           Category
         </label>
         <select
@@ -100,7 +144,7 @@ export default function ProductForm({ categories, onSubmit }: ProductFormProps) 
           value={formData.categoryId}
           onChange={handleChange}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
         >
           <option value={0}>Select a category</option>
           {categories.map((cat) => (
@@ -111,21 +155,31 @@ export default function ProductForm({ categories, onSubmit }: ProductFormProps) 
         </select>
       </div>
 
+      {/* Image Upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Image URL
+        <label className="block text-sm font-semibold text-gray-700">
+          Upload Image
         </label>
         <input
-          type="text"
-          name="imageUrl"
-          value={formData.imageUrl}
-          onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="mt-2 block w-full text-sm border-2 border-dashed border-gray-300 rounded-lg p-3 cursor-pointer hover:border-indigo-400"
         />
+
+        {/* Preview */}
+        {formData.imageUrl && (
+          <Image
+            src={formData.imageUrl}
+            alt="Preview"
+            className="mt-4 w-32 h-32 object-cover rounded-lg border"
+          />
+        )}
       </div>
 
-      {/* <div>
-        <label className="block text-sm font-medium text-gray-700">
+      {/* Seller ID */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700">
           Seller ID
         </label>
         <input
@@ -134,16 +188,19 @@ export default function ProductForm({ categories, onSubmit }: ProductFormProps) 
           value={formData.sellerId}
           onChange={handleChange}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
         />
-      </div> */}
+      </div>
 
-      <button
-        type="submit"
-        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none"
-      >
-        Save Product
-      </button>
+      {/* Button */}
+      <div className="flex justify-center pt-4">
+        <button
+          type="submit"
+          className="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition"
+        >
+          Save Product
+        </button>
+      </div>
     </form>
   );
 }

@@ -1,13 +1,19 @@
-import postgres from "postgres";
+import { sql } from "@/app/lib/db";
+import { NextRequest } from "next/server";
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
+export async function GET(req: NextRequest) {
+  const ids = req.nextUrl.searchParams.get("ids");
 
-export async function GET() {
-  try {
-    const products = await sql`SELECT * FROM products LIMIT 5;`;
-    return Response.json(products);
-  } catch (err) {
-    console.error("DB error:", err);
-    return new Response("Internal Server Error", { status: 500 });
+  if (!ids) {
+    return Response.json([]);
   }
+
+  const idArray = ids.split(",");
+
+  const products = await sql`
+    SELECT * FROM products
+    WHERE id = ANY(${idArray})
+  `;
+
+  return Response.json(products);
 }

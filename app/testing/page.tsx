@@ -8,18 +8,7 @@ import SellerCard from "../components/SellerCard";
 import ProductForm from "../components/ProductForm";
 import StarRating from "../components/StarRating";
 import ProductCard from "../components/ProductCard";
-
-interface Product {
-  id: number;
-  seller_id: number;
-  name: string;
-  description: string;
-  price: number;
-  category_id: number;
-  review_count: number;
-  image_url: string;
-  created_at: string;
-}
+import { Product } from "../types/Product";
 
 export default function TestingPage() {
   const [products, setProducts] = useState<Product[]>([]);

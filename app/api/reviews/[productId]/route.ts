@@ -1,12 +1,5 @@
 import { sql } from "@/app/lib/db";
-
-export interface Review {
-  id: string;
-  productId: string;
-  rating: number;
-  reviewerName: string;
-  date: string;
-}
+import { Review } from "@/app/types/Review";
 
 export async function GET(
   request: Request,
