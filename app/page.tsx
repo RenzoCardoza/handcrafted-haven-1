@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
+import Nav from "./components/Nav";
 
 export default function Home() {
   return (
     <main className="flex flex-col min-h-screen">
       <Header />
+      <Nav />
 
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center bg-amber-50 py-16">
@@ -26,6 +28,7 @@ export default function Home() {
           </button>
         </a>
       </section>
+
       <Footer />
     </main>
   );
