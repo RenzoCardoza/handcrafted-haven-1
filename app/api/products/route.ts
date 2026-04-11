@@ -1,19 +1,18 @@
-import { sql } from "@/app/lib/db";
-import { NextRequest } from "next/server";
+import { getProducts } from "@/app/lib/db/products";
 
-export async function GET(req: NextRequest) {
-  const ids = req.nextUrl.searchParams.get("ids");
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
 
-  if (!ids) {
-    return Response.json([]);
-  }
+  const filters = {
+    material: searchParams.get("material") || undefined,
+    artisan: searchParams.get("artisan") || undefined,
+    minPrice: searchParams.get("minPrice") || undefined,
+    maxPrice: searchParams.get("maxPrice") || undefined,
+    q: searchParams.get("q") || undefined,
+    sort: searchParams.get("sort") || undefined,
+  };
 
-  const idArray = ids.split(",");
-
-  const products = await sql`
-    SELECT * FROM products
-    WHERE id = ANY(${idArray})
-  `;
+  const products = await getProducts(filters);
 
   return Response.json(products);
 }
