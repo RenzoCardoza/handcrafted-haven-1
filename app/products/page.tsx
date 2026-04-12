@@ -1,10 +1,14 @@
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
-import ProductCard from "@/app/components/ProductCard";
+import ProductGrid from "@/app/components/ProductGrid";
 import FilterBar from "../components/FilterBar";
+import ClientFilters from "./ClientFilters";
 import { sql } from "@/app/lib/db";
 
+export const dynamic = "force-dynamic";
+
 type SearchParams = {
+  q?: string;
   material?: string;
   artisan?: string;
   minPrice?: string;
@@ -13,67 +17,84 @@ type SearchParams = {
 };
 
 async function getProducts(filters: SearchParams) {
-  const { material, artisan, minPrice, maxPrice, sort } = filters;
+  const { q, material, artisan, minPrice, maxPrice, sort } = filters;
 
-  const rows = await sql`
-  SELECT 
-    p.id,
-    p.name,
-    p.description,
-    p.price,
-    p.image_url,
-    p.material,
-    a.id AS artisan_id,
-    a.name AS artisan_name
-  FROM products p
-  LEFT JOIN artisans a ON p.artisan_id = a.id
-`;
+  let query = sql`
+    SELECT 
+      p.id,
+      p.name,
+      p.description,
+      p.price,
+      p.image_url,
+      p.material,
+      p.created_at,
 
-// convert to normal array
-let filtered = [...rows];
+      a.id AS artisan_id,
+      a.name AS artisan_name,
 
-  // Filters
-  if (material) {
-    filtered = filtered.filter(
-      (p) =>
-        p.material &&
-        p.material.toLowerCase() === material.toLowerCase()
-    );
+      COALESCE(AVG(r.rating), 0) AS avg_rating,
+      COUNT(r.id) AS review_count
+
+    FROM products p
+    LEFT JOIN artisans a ON p.artisan_id = a.id
+    LEFT JOIN reviews r ON r.product_id = p.id
+
+    WHERE 1=1
+  `;
+
+  // search
+  if (q && q.trim() !== "") {
+    query = sql`${query} AND (
+      p.name ILIKE ${"%" + q.trim() + "%"}
+      OR p.description ILIKE ${"%" + q.trim() + "%"}
+      OR a.name ILIKE ${"%" + q.trim() + "%"}
+      OR p.material ILIKE ${"%" + q.trim() + "%"}
+    )`;
   }
 
-  if (artisan) {
-    filtered = filtered.filter(
-      (p) =>
-        p.artisan_name &&
-        p.artisan_name.toLowerCase().includes(artisan.toLowerCase())
-    );
+  // category
+  if (material && material.trim() !== "") {
+    query = sql`${query} AND LOWER(p.material) = LOWER(${material})`;
   }
 
-  if (minPrice) {
-    filtered = filtered.filter((p) => p.price >= Number(minPrice));
+  // artisan
+  if (artisan && artisan.trim() !== "") {
+    query = sql`${query} AND a.name ILIKE ${"%" + artisan + "%"}`;
   }
 
-  if (maxPrice) {
-    filtered = filtered.filter((p) => p.price <= Number(maxPrice));
+  // price
+  if (minPrice && !isNaN(Number(minPrice))) {
+    query = sql`${query} AND p.price >= ${Number(minPrice)}`;
   }
 
-  // Sort
+  if (maxPrice && !isNaN(Number(maxPrice))) {
+    query = sql`${query} AND p.price <= ${Number(maxPrice)}`;
+  }
+
+  query = sql`${query} GROUP BY p.id, a.id`;
+
+  // sort
   if (sort === "price-asc") {
-    filtered.sort((a, b) => a.price - b.price);
+    query = sql`${query} ORDER BY p.price ASC`;
   } else if (sort === "price-desc") {
-    filtered.sort((a, b) => b.price - a.price);
+    query = sql`${query} ORDER BY p.price DESC`;
   } else {
-    filtered.sort((a, b) => Number(b.id) - Number(a.id));
+    query = sql`${query} ORDER BY p.id DESC`;
   }
 
-  return filtered.map((row) => ({
+  const rows = await query;
+
+  return rows.map((row) => ({
     id: String(row.id),
     name: row.name ?? "Unnamed product",
     description: row.description ?? "",
     price: Number(row.price ?? 0),
     image_url: row.image_url ?? "",
+    created_at: row.created_at
+      ? new Date(row.created_at).toISOString()
+      : new Date().toISOString(),
 
-    seller: {
+    artisan: {
       id: String(row.artisan_id ?? "unknown"),
       name: row.artisan_name ?? "Unknown seller",
     },
@@ -85,7 +106,8 @@ let filtered = [...rows];
         }
       : undefined,
 
-    created_at: new Date().toISOString(),
+    avg_rating: Number(row.avg_rating ?? 0),
+    review_count: Number(row.review_count ?? 0),
   }));
 }
 
@@ -94,41 +116,31 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  // unwrap everything
   const filters = await searchParams;
-
   const products = await getProducts(filters);
 
   return (
     <main className="flex flex-col min-h-screen">
       <Header />
 
-      <section className="max-w-7xl mx-auto w-full px-4 py-10 flex gap-6">
-        
-        {/* Larger view */}
-        <aside className="w-56 hidden md:block">
-          <FilterBar />
-        </aside>
+      <section className="max-w-7xl mx-auto w-full px-4 py-10">
+        <div className="flex gap-6">
+          
+          {/* large view filter (desktop) */}
+          <aside className="w-64 hidden md:block">
+            <FilterBar />
+          </aside>
 
-        {/* Products */}
-        <div className="flex-1">
+          {/* mobile view filter */}
+          <div className="flex-1">
 
-          {/* MOBILE FILTER BUTTON */}
-          <div className="md:hidden mb-4">
-            <FilterBar mobile />
+            <ClientFilters />
+
+            <h1 className="text-2xl font-bold mb-4">Products</h1>
+
+            <ProductGrid products={products} />
           </div>
 
-          <h1 className="text-2xl font-bold mb-4">Products</h1>
-
-          {products.length === 0 ? (
-            <p className="text-gray-500">No products found.</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
         </div>
       </section>
 

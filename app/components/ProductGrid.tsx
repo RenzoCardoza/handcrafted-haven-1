@@ -39,7 +39,15 @@ export default function ProductGrid({
         </h2>
       )}
 
-      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center">
+      <div className="
+          grid 
+          gap-6 
+          grid-cols-2 
+          sm:grid-cols-2 
+          md:grid-cols-3 
+          lg:grid-cols-4 
+          xl:grid-cols-4
+        ">
         {products.map((product) => (
           <ProductCard
             key={product.id}
