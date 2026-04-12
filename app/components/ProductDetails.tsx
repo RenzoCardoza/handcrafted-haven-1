@@ -13,7 +13,7 @@ type ProductSafe = {
   image_url: string;
   created_at?: string;
 
-  seller?: {
+  artisan?: {
     id: string;
     name: string;
   };
@@ -70,19 +70,32 @@ export default function ProductDetails({
 
           {/* seller */}
           <p className="text-sm text-gray-500">
-            {product.seller && (
+            {product.artisan && (
               <>
                 Seller:{" "}
                 <a
-                  href={`/seller/${product.seller.id}`}
+                  href={`/artisans/${product.artisan.id}`}
                   className="text-indigo-600 hover:underline"
                 >
-                  {product.seller.name}
+                  {product.artisan.name}
                 </a>
               </>
             )}
             
           </p>
+
+          {/* category */}
+          {product.category && (
+            <p className="text-sm text-gray-500">
+              Category:{" "}
+              <a
+                href={`/products?material=${product.category.name.toLocaleLowerCase()}`}
+                className="text-indigo-600 hover:underline capitalize"
+              >
+                {product.category.name}
+              </a>
+            </p>
+          )}
 
           {/* make the date safe */}
           <p className="text-sm text-gray-500">

@@ -1,47 +1,15 @@
 import { notFound } from "next/navigation";
-
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
 import ProductDetails from "@/app/components/ProductDetails";
 import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
 import { sql } from "@/app/lib/db";
+import { Product } from "@/app/types/Product";
 
-/* Make type safer */
+/* Fetch Products */
 
-type ProductSafe = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image_url: string;
-  created_at?: string;
-
-  seller?: {
-    id: string;
-    name: string;
-  };
-
-  category?: {
-    id: string;
-    name: string;
-  };
-};
-
-/* Helper Funct*/
-
-// function formatDate(date?: string) {
-//   if (!date) return "N/A";
-//   return new Date(date).toLocaleDateString("en-US", {
-//     year: "numeric",
-//     month: "long",
-//     day: "numeric",
-//   });
-// }
-
-/* Get Data */
-
-async function getProduct(id: string): Promise<ProductSafe | null> {
+async function getProduct(id: string): Promise<Product | null> {
   try {
     const rows = await sql`
       SELECT 
@@ -51,13 +19,13 @@ async function getProduct(id: string): Promise<ProductSafe | null> {
         p.price,
         p.image_url,
         p.created_at,
+        p.material,
 
         a.id AS artisan_id,
-        a.name AS seller_name
+        a.name AS artisan_name
 
       FROM products p
       LEFT JOIN artisans a ON p.artisan_id = a.id
-
       WHERE p.id = ${id}
       LIMIT 1
     `;
@@ -71,12 +39,20 @@ async function getProduct(id: string): Promise<ProductSafe | null> {
       description: row.description ?? "",
       price: Number(row.price ?? 0),
       image_url: row.image_url ?? "",
-      created_at: row.created_at ?? undefined,
+      created_at: row.created_at
+        ? new Date(row.created_at).toISOString()
+        : new Date().toISOString(),
 
-      seller: row.artisan_id
+      artisan: {
+        id: String(row.artisan_id ?? "unknown"),
+        name: row.artisan_name ?? "Unknown seller",
+      },
+
+      
+      category: row.material
         ? {
-            id: String(row.artisan_id),
-            name: row.seller_name ?? "Unknown seller",
+            id: row.material,
+            name: row.material,
           }
         : undefined,
     };

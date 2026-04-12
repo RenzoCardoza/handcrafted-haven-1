@@ -1,12 +1,12 @@
 export type Product = {
   id: string;
   name: string;
-  description?: string;
+  description: string; 
   price: number;
-  image_url?: string;
+  image_url: string; 
   created_at?: string;
 
-  seller: {
+  artisan: {
     id: string;
     name: string;
   };
@@ -15,4 +15,7 @@ export type Product = {
     id: string;
     name: string;
   };
+
+  avg_rating?: number;
+  review_count?: number;
 };

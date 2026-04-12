@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
-import SellerCard from "../components/SellerCard";
+import SellerCard from "../components/ArtisanCard";
 import ProductForm from "../components/ProductForm";
 import StarRating from "../components/StarRating";
 import ProductCard from "../components/ProductCard";
