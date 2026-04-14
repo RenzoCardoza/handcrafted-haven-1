@@ -9,7 +9,7 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
     <Link href={`/artisans/${artisan.id}`}>
       <div className="border rounded-xl overflow-hidden bg-white hover:shadow-md transition cursor-pointer max-w-sm mx-auto">
         
-        {/* Image */}
+        {/* image */}
         <div className="relative w-full aspect-[4/3] md:aspect-[3/2] bg-gray-100">
           {artisan.image_url ? (
             <Image
