@@ -1,4 +1,5 @@
 import Header from "@/app/components/Header";
+import Nav from "../components/Nav";
 import Footer from "@/app/components/Footer";
 import ProductGrid from "@/app/components/ProductGrid";
 import FilterBar from "../components/FilterBar";
@@ -122,7 +123,7 @@ export default async function ProductsPage({
   return (
     <main className="flex flex-col min-h-screen">
       <Header />
-
+      <Nav />
       <section className="max-w-7xl mx-auto w-full px-4 py-10">
         <div className="flex gap-6">
           
