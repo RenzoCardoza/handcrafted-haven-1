@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Serif, Baloo_2 } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers"; 
 
 const ibmPlexSerif = IBM_Plex_Serif({
   subsets: ["latin"],
@@ -30,7 +31,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${ibmPlexSerif.variable} ${baloo2.variable}`}
     >
-      <body className="font-body min-h-full flex flex-col">{children}</body>
+      <body className="font-body min-h-full flex flex-col">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

@@ -1,24 +1,38 @@
-import { getServerSession } from "next-auth";
+"use client";
 
-export default async function UserPage() {
-  const session = await getServerSession();
+import { useSession, signOut } from "next-auth/react";
+
+export default function UserPage() {
+  const { data: session } = useSession();
 
   if (!session) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <h1>Not authorized</h1>
+        <a href="/login" className="underline">
+          Go to Login
+        </a>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="p-6 border rounded-xl shadow-md">
+    <main className="flex min-h-screen items-center justify-center">
+      <div className="p-6 border rounded-xl shadow-md text-center">
         <h1 className="text-xl font-semibold mb-2">
           User Dashboard
         </h1>
-        <p>Welcome {session.user?.email}</p>
+
+        <p className="mb-4">
+          Welcome {session.user?.name}
+        </p>
+
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="bg-red-500 text-white px-4 py-2 rounded-md"
+        >
+          Logout
+        </button>
       </div>
-    </div>
+    </main>
   );
 }
