@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import Image from "next/image";
 
@@ -12,47 +12,57 @@ type Artisan = {
 
 export default function ArtisanBanner({ artisan }: { artisan: Artisan }) {
   return (
-    <div className="w-full bg-gradient-to-r from-amber-50 to-white border rounded-2xl p-6 md:p-8 mb-10">
-      
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+    <div
+      className="
+        w-full rounded-3xl border border-[#E5DFD3]
+        bg-white/60 backdrop-blur-sm
+        p-6 md:p-8
+      "
+    >
+      <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
         
         {/* profile pic */}
-        <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-          {artisan.image_url ? (
-            <Image
-              src={artisan.image_url}
-              alt={artisan.name}
-              fill
-              className="object-contain p-2"
-              sizes="128px"
-              priority
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-              No Image
+        <div className="flex-shrink-0">
+          <div className="relative h-28 w-28 md:h-32 md:w-32 rounded-full bg-[#F5F1E8] p-2">
+            <div className="relative h-full w-full overflow-hidden rounded-full ring-4 ring-white">
+              {artisan.image_url ? (
+                <Image
+                  src={artisan.image_url}
+                  alt={artisan.name}
+                  fill
+                  sizes="128px"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-gray-400">
+                  No Image
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         {/* info */}
-        <div className="text-center md:text-left">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+        <div className="flex-1 text-center md:text-left">
+          <h1 className="text-3xl md:text-4xl font-semibold text-[#2F241D] leading-[1.2]">
             {artisan.name}
           </h1>
 
           {artisan.bio && (
-            <p className="text-gray-600 mt-2 max-w-xl">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[#5C4B3F]">
               {artisan.bio}
             </p>
           )}
 
           {artisan.location && (
-            <p className="text-gray-600 mt-2 max-w-xl">
-              Location: {artisan.location}
+            <p className="mt-4 text-sm font-medium text-[#8A7768]">
+              📍 {artisan.location}
             </p>
           )}
         </div>
       </div>
     </div>
   );
+
 }
