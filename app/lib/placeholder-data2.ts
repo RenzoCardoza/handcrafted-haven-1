@@ -185,7 +185,7 @@ const products = [
     },
     {
         name: "Ceramic Plate",
-        material: "Clay",
+        material: "Ceramic",
         price: 35,
         description: "Decorative plate.",
         image_url: "/products/ceramic-plate.png",
@@ -217,7 +217,7 @@ const products = [
     },
     {
         name: "Ceramic Teapot",
-        material: "Clay",
+        material: "Ceramic",
         price: 65,
         description: "Traditional handmade teapot.",
         image_url: "/products/ceramic-teapot.jpg",
@@ -289,7 +289,7 @@ const products = [
     },
     {
         name: "Ceramic Bowl Set",
-        material: "Clay",
+        material: "Ceramic",
         price: 75,
         description: "Set of 3 ceramic bowls.",
         image_url: "/products/ceramic-bowl-set.jpg",
@@ -353,7 +353,7 @@ const products = [
     },
     {
         name: "Decorative Ceramic Tile",
-        material: "Clay",
+        material: "Ceramic",
         price: 27,
         description: "Hand-painted decorative tile.",
         image_url: "/products/decorative-ceramic-tile.jpg",
