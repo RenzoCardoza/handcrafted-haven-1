@@ -75,6 +75,9 @@ export async function createProduct(
   const { name, description, price, material, image_url, quantity } =
     validatedFields.data;
 
+  let artisanId: string;
+  let newProductId: string;
+
   try {
     const artisanRows = await sql`
       SELECT id
@@ -91,6 +94,8 @@ export async function createProduct(
           "No artisan account is linked to this email. Please create an artisan profile first.",
       };
     }
+
+    artisanId = String(artisan.id);
 
     const insertedRows = await sql`
       INSERT INTO products (
@@ -114,20 +119,20 @@ export async function createProduct(
       RETURNING id
     `;
 
-    const newProduct = insertedRows[0];
-
-    revalidatePath("/products");
-    revalidatePath(`/products/${newProduct.id}`);
-    revalidatePath(`/artisans/${artisan.id}`);
-    revalidatePath("/artisans/dashboard");
-
-    redirect(`/products/${newProduct.id}`);
+    newProductId = String(insertedRows[0].id);
   } catch (error) {
     console.error("Database Error: Failed to create product.", error);
     return {
       message: "Database Error: Failed to create product.",
     };
   }
+
+  revalidatePath("/products");
+  revalidatePath(`/products/${newProductId}`);
+  revalidatePath(`/artisans/${artisanId}`);
+  revalidatePath("/artisans/dashboard");
+
+  redirect(`/products/${newProductId}`);
 }
 
 export async function updateProduct(
