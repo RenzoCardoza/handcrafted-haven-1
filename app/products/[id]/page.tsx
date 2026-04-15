@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Header from "@/app/components/Header";
+import Nav from "@/app/components/Nav";
 import Footer from "@/app/components/Footer";
 import ProductDetails from "@/app/components/ProductDetails";
 import ReviewList from "../../components/ReviewList";
@@ -110,20 +111,36 @@ export default async function ProductPage({
   if (!product) notFound();
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="flex min-h-screen flex-col bg-[#F5F1E8]">
       <Header />
+      <Nav />
 
-      <section className="max-w-4xl mx-auto w-full px-6 py-10">
-        <ProductDetails product={product} />
+      <section className="flex-1 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl space-y-10">
+          <div className="rounded-3xl border border-[#E5DFD3] bg-white/70 p-6 shadow-sm md:p-8">
+            <ProductDetails product={product} />
+          </div>
 
-        <hr className="my-10" />
+          <div className="rounded-3xl border border-[#E5DFD3] bg-white/60 p-6 shadow-sm md:p-8">
+            <div className="mb-8">
+              <p className="text-sm font-medium uppercase tracking-[0.18em] text-[#8A7768]">
+                Customer Feedback
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold text-[#2F241D]">
+                Reviews
+              </h2>
+              <p className="mt-2 text-[#6B5B4D]">
+                See what buyers are saying about this product.
+              </p>
+            </div>
 
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Reviews</h2>
-
-          <ReviewList reviews={reviews} />
-
-          <ReviewForm productId={product.id} />
+            <div className="space-y-8">
+              <ReviewList reviews={reviews} />
+              <div className="border-t border-[#E5DFD3] pt-8">
+                <ReviewForm productId={product.id} />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -4,7 +4,6 @@ import Image from "next/image";
 import AddToCartButton from "./AddToCartButton";
 import { useState } from "react";
 
-/* make type safe, I struggle a lot with this one */
 type ProductSafe = {
   id: string;
   name: string;
@@ -42,91 +41,101 @@ export default function ProductDetails({
   const [quantity, setQuantity] = useState(product.quantity > 0 ? 1 : 0);
 
   return (
-    <div className="flex flex-col md:flex-row gap-8">
+    <div className="flex flex-col gap-10 md:flex-row">
 
-      {/* image */}
-      <div className="relative w-full md:w-1/2 aspect-square bg-amber-50 rounded flex items-center justify-center">
+      {/* IMAGE */}
+      <div className="relative w-full md:w-1/2 aspect-square rounded-2xl bg-[#F8F4ED] flex items-center justify-center overflow-hidden">
         {product.image_url && (
           <Image
-            src={product.image_url || "/fallback.png"}
+            src={product.image_url}
             alt={product.name}
-            width={300}
-            height={300}
-            className="object-contain"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-contain p-6"
           />
         )}
       </div>
 
-      {/* info */}
-      <div className="flex-1 flex flex-col">
+      {/* INFO */}
+      <div className="flex flex-1 flex-col">
 
-        <div className="space-y-4">
-          <h1 className="text-3xl font-bold">{product.name}</h1>
+        {/* TEXT CONTENT */}
+        <div className="space-y-5">
 
-          <p className="text-green-600 text-2xl font-semibold">
+          <h1 className="text-3xl md:text-4xl font-semibold text-[#2F241D]">
+            {product.name}
+          </h1>
+
+          <p className="text-2xl font-semibold text-[#7C5A3C]">
             ${product.price.toFixed(2)}
           </p>
 
-          <p className="text-gray-700">{product.description}</p>
+          <p className="text-[#6B5B4D] leading-relaxed">
+            {product.description}
+          </p>
 
+          {/* STOCK */}
           {product.quantity === 0 ? (
-            <p className="text-red-500 font-semibold">
+            <p className="text-red-500 font-medium">
               Out of stock
             </p>
           ) : (
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[#8A7768]">
               {product.quantity} available
             </p>
           )}
 
-          {/* seller */}
-          <p className="text-sm text-gray-500">
+          {/* META */}
+          <div className="space-y-1 text-sm text-[#8A7768]">
+
             {product.artisan && (
-              <>
+              <p>
                 Seller:{" "}
                 <a
                   href={`/artisans/${product.artisan.id}`}
-                  className="text-indigo-600 hover:underline"
+                  className="text-[#7C5A3C] hover:underline"
                 >
                   {product.artisan.name}
                 </a>
-              </>
+              </p>
             )}
-            
-          </p>
 
-          {/* category */}
-          {product.category && (
-            <p className="text-sm text-gray-500">
-              Category:{" "}
-              <a
-                href={`/products?material=${product.category.name.toLocaleLowerCase()}`}
-                className="text-indigo-600 hover:underline capitalize"
-              >
-                {product.category.name}
-              </a>
-            </p>
-          )}
+            {product.category && (
+              <p>
+                Category:{" "}
+                <a
+                  href={`/products?material=${product.category.name.toLowerCase()}`}
+                  className="text-[#7C5A3C] hover:underline capitalize"
+                >
+                  {product.category.name}
+                </a>
+              </p>
+            )}
 
-          {/* make the date safe */}
-          <p className="text-sm text-gray-500">
-            Added on: {formatDate(product.created_at)}
-          </p>
+            <p>Added on: {formatDate(product.created_at)}</p>
+          </div>
         </div>
 
-        {/* controls */}
-        <div className="mt-8 flex flex-col items-center gap-4">
+        {/* CONTROLS */}
+        <div className="mt-10 space-y-5">
 
+          {/* quantity selector */}
           <div className="flex items-center gap-4">
+
             <button
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               disabled={product.quantity === 0}
-              className="px-3 py-1 border rounded disabled:opacity-50"
+              className="
+                w-10 h-10 rounded-lg border border-[#E5DFD3]
+                bg-white text-lg
+                hover:bg-[#F5F1E8]
+                disabled:opacity-40
+              "
             >
               -
             </button>
 
-            <span className="text-lg w-8 text-center">
+            <span className="text-lg w-10 text-center font-medium">
               {quantity}
             </span>
 
@@ -135,22 +144,36 @@ export default function ProductDetails({
                 setQuantity((q) => Math.min(product.quantity, q + 1))
               }
               disabled={product.quantity === 0 || quantity >= product.quantity}
-              className="px-3 py-1 border rounded disabled:opacity-50"
+              className="
+                w-10 h-10 rounded-lg border border-[#E5DFD3]
+                bg-white text-lg
+                hover:bg-[#F5F1E8]
+                disabled:opacity-40
+              "
             >
               +
             </button>
           </div>
 
+          {/* CTA */}
           {product.quantity > 0 ? (
             <AddToCartButton
               productId={product.id}
               quantity={quantity}
-              className="w-full max-w-md py-3 rounded-lg"
+              className="
+                w-full max-w-md
+                py-3
+                rounded-xl
+                bg-[#7C5A3C]
+                text-white
+                hover:bg-[#68492F]
+                transition
+              "
             />
           ) : (
             <button
               disabled
-              className="w-full max-w-md py-3 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed"
+              className="w-full max-w-md py-3 rounded-xl bg-gray-300 text-gray-500"
             >
               Out of stock
             </button>
