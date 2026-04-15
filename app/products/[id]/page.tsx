@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
 import ProductDetails from "@/app/components/ProductDetails";
-import ReviewList from "./ReviewList";
-import ReviewForm from "./ReviewForm";
+import ReviewList from "../../components/ReviewList";
+import ReviewForm from "../../components/ReviewForm";
 import { sql } from "@/app/lib/db";
 import { Product } from "@/app/types/Product";
 
@@ -20,6 +20,7 @@ async function getProduct(id: string): Promise<Product | null> {
         p.image_url,
         p.created_at,
         p.material,
+        p.quantity,
 
         a.id AS artisan_id,
         a.name AS artisan_name
@@ -42,13 +43,13 @@ async function getProduct(id: string): Promise<Product | null> {
       created_at: row.created_at
         ? new Date(row.created_at).toISOString()
         : new Date().toISOString(),
+      quantity: Number(row.quantity ?? 0),
 
       artisan: {
         id: String(row.artisan_id ?? "unknown"),
         name: row.artisan_name ?? "Unknown seller",
       },
 
-      
       category: row.material
         ? {
             id: row.material,

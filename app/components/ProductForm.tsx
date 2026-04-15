@@ -1,34 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useActionState, useRef, useState } from "react";
+import { createProduct, type ProductFormState } from "@/app/lib/actions";
 
-interface ProductFormData {
-  name: string;
-  description: string;
-  price: number;
-  categoryId: number;
-  imageUrl: string;
-  sellerId: number;
-}
+const initialState: ProductFormState = {
+  message: null,
+  errors: {},
+};
 
-interface ProductFormProps {
-  categories: { id: number; name: string }[];
-  onSubmit: (data: ProductFormData) => void;
-}
-
-export default function ProductForm({
-  categories,
-  onSubmit,
-}: ProductFormProps) {
-  const [formData, setFormData] = useState<ProductFormData>({
-    name: "",
-    description: "",
-    price: 0,
-    categoryId: 0,
-    imageUrl: "",
-    sellerId: 0,
-  });
+export default function ProductForm() {
+  const [state, formAction, isPending] = useActionState(
+    createProduct,
+    initialState
+  );
+  const [imageUrl, setImageUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleImageUpload(
     e: React.ChangeEvent<HTMLInputElement>
@@ -38,10 +25,10 @@ export default function ProductForm({
 
     const data = new FormData();
     data.append("file", file);
-    data.append("upload_preset", "handcrafted_haven_products"); // "handcrafted_haven_products" is the Upload Preset I createdin my cloudinary dashboard
+    data.append("upload_preset", "handcrafted_haven_products");
 
     const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dzzsi0uoo/image/upload", // My cloudinary CloudName is the URL
+      "https://api.cloudinary.com/v1_1/dzzsi0uoo/image/upload",
       {
         method: "POST",
         body: data,
@@ -50,46 +37,22 @@ export default function ProductForm({
 
     const result = await res.json();
 
-    setFormData((prev) => ({
-      ...prev,
-      imageUrl: result.secure_url,
-    }));
-  }
-
-  function handleChange(
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "price" ||
-        name === "categoryId" ||
-        name === "sellerId"
-          ? Number(value)
-          : value,
-    }));
-  }
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    onSubmit(formData);
+    if (result.secure_url) {
+      setImageUrl(result.secure_url);
+    }
   }
 
   return (
     <form
-      onSubmit={handleSubmit}
+      action={formAction}
       className="max-w-xl mx-auto space-y-6 bg-white shadow-lg rounded-2xl p-8 border border-gray-200"
     >
-      {/* Title */}
+      {/* title */}
       <h2 className="text-2xl font-bold text-gray-800">
         Add New Product
       </h2>
 
-      {/* Name */}
+      {/* name */}
       <div>
         <label className="block text-sm font-semibold text-gray-700">
           Product Name
@@ -97,28 +60,35 @@ export default function ProductForm({
         <input
           type="text"
           name="name"
-          value={formData.name}
-          onChange={handleChange}
           required
           className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
         />
+        {state.errors?.name && (
+          <p className="mt-1 text-sm text-red-500">
+            {state.errors.name[0]}
+          </p>
+        )}
       </div>
 
-      {/* Description */}
+      {/* description */}
       <div>
         <label className="block text-sm font-semibold text-gray-700">
           Description
         </label>
         <textarea
           name="description"
-          value={formData.description}
-          onChange={handleChange}
           rows={4}
+          required
           className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
         />
+        {state.errors?.description && (
+          <p className="mt-1 text-sm text-red-500">
+            {state.errors.description[0]}
+          </p>
+        )}
       </div>
 
-      {/* Price */}
+      {/* price */}
       <div>
         <label className="block text-sm font-semibold text-gray-700">
           Price
@@ -126,79 +96,103 @@ export default function ProductForm({
         <input
           type="number"
           name="price"
-          value={formData.price}
-          onChange={handleChange}
           required
           step="0.01"
+          min="0.01"
           className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
         />
+        {state.errors?.price && (
+          <p className="mt-1 text-sm text-red-500">
+            {state.errors.price[0]}
+          </p>
+        )}
       </div>
 
-      {/* Category */}
+      {/* category */}
       <div>
         <label className="block text-sm font-semibold text-gray-700">
           Category
         </label>
-        <select
-          name="categoryId"
-          value={formData.categoryId}
-          onChange={handleChange}
+        <input
+          type="text"
+          name="material"
           required
+          placeholder="e.g. Clay, Leather, Wood"
           className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-        >
-          <option value={0}>Select a category</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+        />
+        {state.errors?.material && (
+          <p className="mt-1 text-sm text-red-500">
+            {state.errors.material[0]}
+          </p>
+        )}
       </div>
 
-      {/* Image Upload */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700">
+          Quantity
+        </label>
+        <input
+          type="number"
+          name="quantity"
+          required
+          min="0"
+          defaultValue={1}
+          className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+        />
+        {state.errors?.quantity && (
+          <p className="mt-1 text-sm text-red-500">
+            {state.errors.quantity[0]}
+          </p>
+        )}
+      </div>
+
+      {/* image upload */}
       <div>
         <label className="block text-sm font-semibold text-gray-700">
           Upload Image
         </label>
         <input
+          ref={fileInputRef}
           type="file"
           accept="image/*"
           onChange={handleImageUpload}
           className="mt-2 block w-full text-sm border-2 border-dashed border-gray-300 rounded-lg p-3 cursor-pointer hover:border-indigo-400"
         />
 
-        {/* Preview */}
-        {formData.imageUrl && (
-          <Image
-            src={formData.imageUrl}
-            alt="Preview"
-            className="mt-4 w-32 h-32 object-cover rounded-lg border"
-          />
+        <input type="hidden" name="image_url" value={imageUrl} />
+
+        {state.errors?.image_url && (
+          <p className="mt-1 text-sm text-red-500">
+            {state.errors.image_url[0]}
+          </p>
+        )}
+
+        {/* preview */}
+        {imageUrl && (
+          <div className="mt-4">
+            <Image
+              src={imageUrl}
+              alt="Preview"
+              width={128}
+              height={128}
+              className="w-32 h-32 object-cover rounded-lg border"
+            />
+          </div>
         )}
       </div>
 
-      {/* Seller ID */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700">
-          Seller ID
-        </label>
-        <input
-          type="number"
-          name="sellerId"
-          value={formData.sellerId}
-          onChange={handleChange}
-          required
-          className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-        />
-      </div>
+      {state.message && (
+        <p className="text-sm text-red-500">{state.message}</p>
+      )}
 
-      {/* Button */}
+      {/* button */}
       <div className="flex justify-center pt-4">
         <button
           type="submit"
-          className="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition"
+          disabled={isPending}
+          className="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition disabled:opacity-60"
         >
-          Save Product
+          {isPending ? "Saving..." : "Save Product"}
         </button>
       </div>
     </form>

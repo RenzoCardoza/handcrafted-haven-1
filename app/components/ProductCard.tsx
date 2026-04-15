@@ -55,6 +55,16 @@ export default function ProductCard({ product }: { product: Product }) {
             ${Number(product.price).toFixed(2)}
           </p>
 
+          {product.quantity === 0 ? (
+            <p className="text-sm text-red-500 font-medium">
+              Out of stock
+            </p>
+          ) : (
+            <p className="text-xs text-gray-500">
+              In stock: {product.quantity}
+            </p>
+          )}
+
           {/* rating + date */}
           <div className="text-xs text-gray-500 flex flex-col gap-1">
             
@@ -74,10 +84,10 @@ export default function ProductCard({ product }: { product: Product }) {
             <span className="text-gray-400">
               {product.created_at
                 ? new Date(product.created_at).toLocaleDateString("en-US", {
-                                                                              year: "numeric",
-                                                                              month: "2-digit",
-                                                                              day: "2-digit",
-                                                                            })
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })
                 : ""}
             </span>
 
@@ -87,7 +97,16 @@ export default function ProductCard({ product }: { product: Product }) {
 
       {/* button */}
       <div className="p-4 pt-0 mt-auto">
-        <AddToCartButton productId={product.id} />
+        {product.quantity > 0 ? (
+          <AddToCartButton productId={product.id} />
+        ) : (
+          <button
+            disabled
+            className="w-full bg-gray-300 text-gray-500 py-2 rounded-lg cursor-not-allowed"
+          >
+            Out of stock
+          </button>
+        )}
       </div>
     </div>
   );
