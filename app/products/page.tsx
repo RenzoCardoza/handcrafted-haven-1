@@ -1,8 +1,8 @@
 import Header from "@/app/components/Header";
-import Nav from "../components/Nav";
+import Nav from "@/app/components/Nav";
 import Footer from "@/app/components/Footer";
 import ProductGrid from "@/app/components/ProductGrid";
-import FilterBar from "../components/FilterBar";
+import FilterBar from "@/app/components/FilterBar";
 import ClientFilters from "./ClientFilters";
 import { sql } from "@/app/lib/db";
 
@@ -44,7 +44,6 @@ async function getProducts(filters: SearchParams) {
     WHERE 1=1
   `;
 
-  // search
   if (q && q.trim() !== "") {
     query = sql`${query} AND (
       p.name ILIKE ${"%" + q.trim() + "%"}
@@ -54,17 +53,14 @@ async function getProducts(filters: SearchParams) {
     )`;
   }
 
-  // category
   if (material && material.trim() !== "") {
     query = sql`${query} AND LOWER(p.material) = LOWER(${material})`;
   }
 
-  // artisan
   if (artisan && artisan.trim() !== "") {
     query = sql`${query} AND a.name ILIKE ${"%" + artisan + "%"}`;
   }
 
-  // price
   if (minPrice && !isNaN(Number(minPrice))) {
     query = sql`${query} AND p.price >= ${Number(minPrice)}`;
   }
@@ -75,7 +71,6 @@ async function getProducts(filters: SearchParams) {
 
   query = sql`${query} GROUP BY p.id, a.id`;
 
-  // sort
   if (sort === "price-asc") {
     query = sql`${query} ORDER BY p.price ASC`;
   } else if (sort === "price-desc") {
@@ -123,23 +118,60 @@ export default async function ProductsPage({
   const products = await getProducts(filters);
 
   return (
-    <main className="flex flex-col min-h-screen bg-amber-50">
+    <main className="flex min-h-screen flex-col bg-[#F5F1E8]">
       <Header />
       <Nav />
-      <section className="max-w-7xl mx-auto w-full px-4 py-10">
-        <div className="flex gap-6">
-          {/* large view filter (desktop) */}
-          <aside className="w-64 hidden md:block">
-            <FilterBar />
-          </aside>
 
-          {/* mobile view filter */}
-          <div className="flex-1">
+      <section className="flex-1 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          {/* Mobile filters */}
+          <div className="mb-6 md:hidden">
             <ClientFilters />
+          </div>
 
-            <h1 className="text-2xl font-bold mb-4">Products</h1>
+          <div className="grid gap-8 md:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
+            {/* Desktop filters */}
+            <aside className="hidden md:block">
+              <div className="sticky top-28 rounded-3xl border border-[#E5DFD3] bg-white/70 p-5 shadow-sm">
+                <FilterBar />
+              </div>
+            </aside>
 
-            <ProductGrid products={products} />
+            {/* Main content */}
+            <div>
+              <div className="mb-6 rounded-3xl border border-[#E5DFD3] bg-white/60 p-6 shadow-sm">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="text-sm font-medium uppercase tracking-[0.18em] text-[#8A7768]">
+                      Marketplace
+                    </p>
+                    <h1 className="mt-2 text-3xl font-semibold text-[#2F241D] sm:text-4xl">
+                      Products
+                    </h1>
+                    <p className="mt-2 text-[#6B5B4D]">
+                      Discover handmade pieces crafted by artisans around the world.
+                    </p>
+                  </div>
+
+                  <div className="text-sm text-[#8A7768]">
+                    {products.length} {products.length === 1 ? "item" : "items"}
+                  </div>
+                </div>
+              </div>
+
+              {products.length === 0 ? (
+                <div className="rounded-3xl border border-dashed border-[#D8CFC2] bg-white/50 px-6 py-16 text-center shadow-sm">
+                  <h2 className="text-2xl font-semibold text-[#2F241D]">
+                    No products found
+                  </h2>
+                  <p className="mt-3 text-[#6B5B4D]">
+                    Try adjusting your filters or search terms to find more handmade items.
+                  </p>
+                </div>
+              ) : (
+                <ProductGrid products={products} />
+              )}
+            </div>
           </div>
         </div>
       </section>
