@@ -1,3 +1,5 @@
+// OLD DATA FOR DB SEED --- DO NOT USE JUST FOR RECORD
+
 const users = [ 
     {
         name: 'adminUser',
