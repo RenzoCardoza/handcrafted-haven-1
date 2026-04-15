@@ -27,17 +27,19 @@ export default async function ArtisansPage() {
   const artisans = await getArtisans();
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="flex min-h-screen flex-col">
       <Header />
       <Nav />
 
-      <section className="max-w-7xl mx-auto w-full px-4 py-10">
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">Artisans</h1>
+      <section className="mx-auto w-full max-w-7xl px-4 py-10">
+        <h1 className="mb-6 text-3xl font-bold md:text-4xl lg:text-5xl">
+          Artisans
+        </h1>
 
         {artisans.length === 0 ? (
           <p className="text-gray-500">No artisans found.</p>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {artisans.map((artisan) => (
               <ArtisanCard key={artisan.id} artisan={artisan} />
             ))}
