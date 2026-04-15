@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { z } from "zod/v4";
 
 const reviewSchema = z.object({
@@ -11,12 +12,14 @@ const reviewSchema = z.object({
 
 export default function ReviewForm({ productId }: { productId: string }) {
   const { data: session } = useSession();
+  const router = useRouter();
   const isLoggedIn = !!session?.user;
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   if (!isLoggedIn) {
     return (
@@ -32,7 +35,7 @@ export default function ReviewForm({ productId }: { productId: string }) {
     );
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrors([]);
 
@@ -43,9 +46,39 @@ export default function ReviewForm({ productId }: { productId: string }) {
       return;
     }
 
-    // TODO: send to the server (POST /api/reviews or server action)
-    console.log("submitting review:", { productId, rating, comment });
-    setSubmitted(true);
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId,
+          rating,
+          comment,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrors([data.error || "Something went wrong"]);
+        setLoading(false);
+        return;
+      }
+
+      setSubmitted(true);
+      setRating(0);
+      setComment("");
+      router.refresh();
+    } catch (err) {
+      console.error("Review submission error:", err);
+      setErrors(["Something went wrong while submitting your review"]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (submitted) {
@@ -100,9 +133,10 @@ export default function ReviewForm({ productId }: { productId: string }) {
 
       <button
         type="submit"
-        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        disabled={loading}
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-60"
       >
-        Submit review
+        {loading ? "Submitting..." : "Submit review"}
       </button>
     </form>
   );

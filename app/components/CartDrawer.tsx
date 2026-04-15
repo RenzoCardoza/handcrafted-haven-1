@@ -11,9 +11,9 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@/app/components/sheet";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/button";
 import Image from "next/image";
 
 export default function CartDrawer() {

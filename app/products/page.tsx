@@ -29,6 +29,7 @@ async function getProducts(filters: SearchParams) {
       p.image_url,
       p.material,
       p.created_at,
+      p.quantity,
 
       a.id AS artisan_id,
       a.name AS artisan_name,
@@ -94,6 +95,7 @@ async function getProducts(filters: SearchParams) {
     created_at: row.created_at
       ? new Date(row.created_at).toISOString()
       : new Date().toISOString(),
+    quantity: Number(row.quantity ?? 0),
 
     artisan: {
       id: String(row.artisan_id ?? "unknown"),

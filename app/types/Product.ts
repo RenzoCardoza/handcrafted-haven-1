@@ -5,6 +5,7 @@ export type Product = {
   price: number;
   image_url: string; 
   created_at?: string;
+  quantity: number;
 
   artisan: {
     id: string;

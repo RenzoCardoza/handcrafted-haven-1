@@ -12,6 +12,7 @@ type ProductSafe = {
   price: number;
   image_url: string;
   created_at?: string;
+  quantity: number;
 
   artisan?: {
     id: string;
@@ -38,7 +39,7 @@ export default function ProductDetails({
 }: {
   product: ProductSafe;
 }) {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(product.quantity > 0 ? 1 : 0);
 
   return (
     <div className="flex flex-col md:flex-row gap-8">
@@ -67,6 +68,16 @@ export default function ProductDetails({
           </p>
 
           <p className="text-gray-700">{product.description}</p>
+
+          {product.quantity === 0 ? (
+            <p className="text-red-500 font-semibold">
+              Out of stock
+            </p>
+          ) : (
+            <p className="text-sm text-gray-600">
+              {product.quantity} available
+            </p>
+          )}
 
           {/* seller */}
           <p className="text-sm text-gray-500">
@@ -109,7 +120,8 @@ export default function ProductDetails({
           <div className="flex items-center gap-4">
             <button
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="px-3 py-1 border rounded"
+              disabled={product.quantity === 0}
+              className="px-3 py-1 border rounded disabled:opacity-50"
             >
               -
             </button>
@@ -119,18 +131,30 @@ export default function ProductDetails({
             </span>
 
             <button
-              onClick={() => setQuantity((q) => q + 1)}
-              className="px-3 py-1 border rounded"
+              onClick={() =>
+                setQuantity((q) => Math.min(product.quantity, q + 1))
+              }
+              disabled={product.quantity === 0 || quantity >= product.quantity}
+              className="px-3 py-1 border rounded disabled:opacity-50"
             >
               +
             </button>
           </div>
 
-          <AddToCartButton
-            productId={product.id}
-            quantity={quantity}
-            className="w-full max-w-md py-3 rounded-lg"
-          />
+          {product.quantity > 0 ? (
+            <AddToCartButton
+              productId={product.id}
+              quantity={quantity}
+              className="w-full max-w-md py-3 rounded-lg"
+            />
+          ) : (
+            <button
+              disabled
+              className="w-full max-w-md py-3 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed"
+            >
+              Out of stock
+            </button>
+          )}
         </div>
       </div>
     </div>
