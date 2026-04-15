@@ -21,6 +21,10 @@ const baloo2 = Baloo_2({
 export const metadata: Metadata = {
   title: "Handcrafted Haven",
   description: "Discover unique handmade creations",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png"
+  }
 };
 
 export default function RootLayout({
