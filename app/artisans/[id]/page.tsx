@@ -98,20 +98,21 @@ export default async function ArtisanPage({
   const products = await getArtisanProducts(id);
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="flex min-h-screen flex-col bg-[#F5F1E8]">
       <Header />
       <Nav />
 
-      <section className="max-w-7xl mx-auto w-full px-4 py-10">
+      <section className="mx-auto flex-1 w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="space-y-12">
+          {/* Artisan Info */}
+          <ArtisanBanner artisan={artisan} />
 
-        {/* Artisan Info */}
-        <ArtisanBanner artisan={artisan} />
-
-        {/* Products */}
-        <ProductGrid
-          products={products}
-          title="Products by this artisan"
-        />
+          {/* Products */}
+          <ProductGrid
+            products={products}
+            title="Products by this artisan"
+          />
+        </div>
       </section>
 
       <Footer />
