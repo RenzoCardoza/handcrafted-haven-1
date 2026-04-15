@@ -92,50 +92,44 @@ export default async function ArtisanDashboardPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    redirect("/api/auth/signin");
+    redirect("/login?role=seller&callbackUrl=/artisans/dashboard");
   }
 
-  let artisan = await getLoggedInArtisan(session.user.email);
+  const userRows = await sql`
+    SELECT role
+    FROM users
+    WHERE email = ${session.user.email}
+    LIMIT 1
+  `;
 
-  // testing block below
-  if (!artisan && process.env.NODE_ENV === "development") {
-    const rows = await sql`
-      SELECT id, name, bio, location, image_url
-      FROM artisans
-      ORDER BY name ASC
-      LIMIT 1
-    `;
+  const user = userRows[0];
 
-    const row = rows[0];
-
-    if (row) {
-      artisan = {
-        id: String(row.id),
-        name: row.name ?? "Unknown artisan",
-        bio: row.bio ?? "",
-        location: row.location ?? "",
-        image_url: row.image_url ?? "",
-      };
-    }
+  if (!user) {
+    redirect("/register?role=seller");
   }
-  // testing block above
+
+  if (user.role !== "seller") {
+    redirect("/sell");
+  }
+
+  const artisan = await getLoggedInArtisan(session.user.email);
 
   if (!artisan) {
     return (
       <main className="flex flex-col min-h-screen">
         <Header />
 
-        <section className="max-w-4xl mx-auto w-full px-4 py-10">
-          <h1 className="text-3xl font-bold mb-4">My Products</h1>
+        <section className="flex-1 max-w-4xl mx-auto w-full px-4 py-10">
+          <h1 className="text-3xl font-bold mb-4">Seller Setup Incomplete</h1>
           <p className="text-gray-600 mb-6">
-            No artisan profile is linked to this account yet.
+            This account is marked as a seller, but the artisan profile is not ready yet.
           </p>
 
           <Link
-            href="/products"
+            href="/sell"
             className="inline-block bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition"
           >
-            Back to Products
+            Complete Seller Setup
           </Link>
         </section>
 
@@ -150,7 +144,7 @@ export default async function ArtisanDashboardPage() {
     <main className="flex flex-col min-h-screen">
       <Header />
 
-      <section className="max-w-7xl mx-auto w-full px-4 py-10">
+      <section className="flex-1 max-w-7xl mx-auto w-full px-4 py-10">
         <ArtisanBanner artisan={artisan} />
 
         <div className="flex items-center justify-between mb-8 gap-4">

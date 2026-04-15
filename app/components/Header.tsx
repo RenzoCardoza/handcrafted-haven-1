@@ -13,7 +13,7 @@ interface HeaderProps {
 
 export default function Header({
   showSearch = true,
-  showAuth = true,
+  //showAuth = true,
 }: HeaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
