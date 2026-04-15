@@ -7,6 +7,7 @@ type Artisan = {
   name: string;
   bio?: string;
   image_url?: string;
+  location?: string;
 };
 
 export default function ArtisanBanner({ artisan }: { artisan: Artisan }) {
@@ -42,6 +43,12 @@ export default function ArtisanBanner({ artisan }: { artisan: Artisan }) {
           {artisan.bio && (
             <p className="text-gray-600 mt-2 max-w-xl">
               {artisan.bio}
+            </p>
+          )}
+
+          {artisan.location && (
+            <p className="text-gray-600 mt-2 max-w-xl">
+              Location: {artisan.location}
             </p>
           )}
         </div>

@@ -1,4 +1,5 @@
 import Header from "@/app/components/Header";
+import Nav from "@/app/components/Nav";
 import Footer from "@/app/components/Footer";
 import ArtisanCard from "@/app/components/ArtisanCard";
 import { sql } from "@/app/lib/db";
@@ -28,9 +29,10 @@ export default async function ArtisansPage() {
   return (
     <main className="flex flex-col min-h-screen">
       <Header />
+      <Nav />
 
       <section className="max-w-7xl mx-auto w-full px-4 py-10">
-        <h1 className="text-2xl font-bold mb-6">Artisans</h1>
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">Artisans</h1>
 
         {artisans.length === 0 ? (
           <p className="text-gray-500">No artisans found.</p>

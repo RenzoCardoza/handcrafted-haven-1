@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Header from "@/app/components/Header";
+import Nav from "@/app/components/Nav";
 import Footer from "@/app/components/Footer";
 import ProductGrid from "@/app/components/ProductGrid";
 import { sql } from "@/app/lib/db";
@@ -99,6 +100,7 @@ export default async function ArtisanPage({
   return (
     <main className="flex flex-col min-h-screen">
       <Header />
+      <Nav />
 
       <section className="max-w-7xl mx-auto w-full px-4 py-10">
 

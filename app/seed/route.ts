@@ -1,5 +1,5 @@
 import postgres from "postgres";
-import { reviews, products, users, artisans } from '../lib/placeholder-data';
+import { reviews, products, users, artisans } from '../lib/placeholder-data2';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -149,6 +149,11 @@ async function seedReviews(sql: any, userResults: any[], productResults: any[]) 
 export async function GET() {
     try {
         await sql.begin(async (tx) => {
+            await tx`DROP TABLE IF EXISTS reviews CASCADE`;
+            await tx`DROP TABLE IF EXISTS products CASCADE`;
+            await tx`DROP TABLE IF EXISTS artisans CASCADE`;
+            await tx`DROP TABLE IF EXISTS users CASCADE`;
+
             console.log('seeding users');
             const userResults = await seedUsers(tx);
             console.log('seeing artisans');

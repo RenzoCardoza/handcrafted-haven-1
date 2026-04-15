@@ -123,12 +123,11 @@ export default async function ProductsPage({
   const products = await getProducts(filters);
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="flex flex-col min-h-screen bg-amber-50">
       <Header />
       <Nav />
       <section className="max-w-7xl mx-auto w-full px-4 py-10">
         <div className="flex gap-6">
-          
           {/* large view filter (desktop) */}
           <aside className="w-64 hidden md:block">
             <FilterBar />
@@ -136,14 +135,12 @@ export default async function ProductsPage({
 
           {/* mobile view filter */}
           <div className="flex-1">
-
             <ClientFilters />
 
             <h1 className="text-2xl font-bold mb-4">Products</h1>
 
             <ProductGrid products={products} />
           </div>
-
         </div>
       </section>
 
