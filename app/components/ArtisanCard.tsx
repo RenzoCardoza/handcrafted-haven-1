@@ -30,7 +30,7 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-sm text-gray-400">
-                  No Image
+                  No Image 
                 </div>
               )}
             </div>
