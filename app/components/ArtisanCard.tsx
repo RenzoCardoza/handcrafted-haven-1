@@ -10,19 +10,23 @@ export default function ArtisanCard({ artisan }: { artisan: Artisan }) {
       <div className="border rounded-xl overflow-hidden bg-white hover:shadow-md transition cursor-pointer max-w-sm mx-auto">
         
         {/* Image */}
-        <div className="relative w-full aspect-[4/3] md:aspect-[3/2] bg-gray-100">
-          {artisan.image_url ? (
-            <Image
-              src={artisan.image_url}
-              alt={artisan.name}
-              fill
-              className="object-contain bg-gray-100 p-2"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-              No Image
+        <div className="flex items-center justify-center w-full pt-6">
+          <div className="relative w-40 aspect-square bg-gray-100 rounded-full p-2">
+            <div className="relative w-full h-full rounded-full overflow-hidden">
+              {artisan.image_url ? (
+                <Image
+                  src={artisan.image_url}
+                  alt={artisan.name}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                  No Image
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Content */}
