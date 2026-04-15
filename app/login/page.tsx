@@ -6,6 +6,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
+import Nav from "@/app/components/Nav";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
@@ -43,6 +44,7 @@ export default function LoginPage() {
   return (
     <main className="flex flex-col min-h-screen">
       <Header showSearch={false} showAuth={false} />
+      <Nav />
 
       <section className="flex-1 flex items-center justify-center px-4 py-10 bg-amber-50">
         <div className="w-full max-w-md p-6 border rounded-2xl shadow-md bg-white">

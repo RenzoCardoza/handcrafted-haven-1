@@ -31,23 +31,35 @@ export default function EditProductModal({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full rounded-lg border border-gray-300 py-2 hover:bg-gray-50 transition"
+        className="
+          w-full rounded-lg border border-[#D8CFC2] px-3 py-2
+          text-sm font-medium text-[#2F241D]
+          transition hover:bg-[#F8F4ED]
+        "
       >
         Edit
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center px-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-800">
-                Edit Product
-              </h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-lg rounded-3xl border border-[#E5DFD3] bg-[#FFFDF9] p-6 shadow-xl md:p-7">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-semibold text-[#2F241D]">
+                  Edit Product
+                </h2>
+                <p className="mt-1 text-sm text-[#6B5B4D]">
+                  Update your product details and save your changes.
+                </p>
+              </div>
 
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="text-sm text-gray-500 hover:text-gray-700"
+                className="
+                  rounded-full px-3 py-1 text-sm text-[#8A7768]
+                  transition hover:bg-[#F3ECE2] hover:text-[#2F241D]
+                "
               >
                 Close
               </button>
@@ -55,7 +67,7 @@ export default function EditProductModal({
 
             <form action={formAction} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-[#4B3B30]">
                   Product Name
                 </label>
                 <input
@@ -63,7 +75,12 @@ export default function EditProductModal({
                   name="name"
                   defaultValue={product.name}
                   required
-                  className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                  className="
+                    mt-1 w-full rounded-xl border border-[#D8CFC2]
+                    bg-white px-3 py-2.5 text-[#2F241D]
+                    outline-none transition
+                    focus:border-[#7C5A3C] focus:ring-2 focus:ring-[#E8D9C8]
+                  "
                 />
                 {state.errors?.name && (
                   <p className="mt-1 text-sm text-red-500">
@@ -73,7 +90,7 @@ export default function EditProductModal({
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-[#4B3B30]">
                   Description
                 </label>
                 <textarea
@@ -81,7 +98,12 @@ export default function EditProductModal({
                   rows={4}
                   defaultValue={product.description}
                   required
-                  className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                  className="
+                    mt-1 w-full rounded-xl border border-[#D8CFC2]
+                    bg-white px-3 py-2.5 text-[#2F241D]
+                    outline-none transition
+                    focus:border-[#7C5A3C] focus:ring-2 focus:ring-[#E8D9C8]
+                  "
                 />
                 {state.errors?.description && (
                   <p className="mt-1 text-sm text-red-500">
@@ -90,28 +112,59 @@ export default function EditProductModal({
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700">
-                  Price
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  defaultValue={product.price}
-                  required
-                  step="0.01"
-                  min="0.01"
-                  className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                />
-                {state.errors?.price && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {state.errors.price[0]}
-                  </p>
-                )}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-semibold text-[#4B3B30]">
+                    Price
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    defaultValue={product.price}
+                    required
+                    step="0.01"
+                    min="0.01"
+                    className="
+                      mt-1 w-full rounded-xl border border-[#D8CFC2]
+                      bg-white px-3 py-2.5 text-[#2F241D]
+                      outline-none transition
+                      focus:border-[#7C5A3C] focus:ring-2 focus:ring-[#E8D9C8]
+                    "
+                  />
+                  {state.errors?.price && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {state.errors.price[0]}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#4B3B30]">
+                    Quantity
+                  </label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    defaultValue={product.quantity}
+                    required
+                    min="0"
+                    className="
+                      mt-1 w-full rounded-xl border border-[#D8CFC2]
+                      bg-white px-3 py-2.5 text-[#2F241D]
+                      outline-none transition
+                      focus:border-[#7C5A3C] focus:ring-2 focus:ring-[#E8D9C8]
+                    "
+                  />
+                  {state.errors?.quantity && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {state.errors.quantity[0]}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-[#4B3B30]">
                   Category
                 </label>
                 <input
@@ -119,30 +172,16 @@ export default function EditProductModal({
                   name="material"
                   defaultValue={product.category?.name ?? ""}
                   required
-                  className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                  className="
+                    mt-1 w-full rounded-xl border border-[#D8CFC2]
+                    bg-white px-3 py-2.5 text-[#2F241D]
+                    outline-none transition
+                    focus:border-[#7C5A3C] focus:ring-2 focus:ring-[#E8D9C8]
+                  "
                 />
                 {state.errors?.material && (
                   <p className="mt-1 text-sm text-red-500">
                     {state.errors.material[0]}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700">
-                  Quantity
-                </label>
-                <input
-                  type="number"
-                  name="quantity"
-                  defaultValue={product.quantity}
-                  required
-                  min="0"
-                  className="mt-1 w-full rounded-lg border-2 border-gray-300 p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                />
-                {state.errors?.quantity && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {state.errors.quantity[0]}
                   </p>
                 )}
               </div>
@@ -161,7 +200,11 @@ export default function EditProductModal({
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50 transition"
+                  className="
+                    rounded-lg border border-[#D8CFC2] px-4 py-2
+                    text-sm font-medium text-[#2F241D]
+                    transition hover:bg-[#F8F4ED]
+                  "
                 >
                   Cancel
                 </button>
@@ -169,7 +212,11 @@ export default function EditProductModal({
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 transition disabled:opacity-60"
+                  className="
+                    rounded-lg bg-[#7C5A3C] px-4 py-2
+                    text-sm font-medium text-white
+                    transition hover:bg-[#68492F] disabled:opacity-60
+                  "
                 >
                   {isPending ? "Saving..." : "Save Changes"}
                 </button>

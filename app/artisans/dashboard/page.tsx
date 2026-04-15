@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import Header from "@/app/components/Header";
+import Nav from "@/app/components/Nav";
 import Footer from "@/app/components/Footer";
 import ArtisanBanner from "@/app/components/ArtisanBanner";
 import MyProductsGrid from "@/app/components/MyProductsGrid";
@@ -116,21 +117,27 @@ export default async function ArtisanDashboardPage() {
 
   if (!artisan) {
     return (
-      <main className="flex flex-col min-h-screen">
+      <main className="flex min-h-screen flex-col bg-[#F5F1E8]">
         <Header />
+        <Nav />
 
-        <section className="flex-1 max-w-4xl mx-auto w-full px-4 py-10">
-          <h1 className="text-3xl font-bold mb-4">Seller Setup Incomplete</h1>
-          <p className="text-gray-600 mb-6">
-            This account is marked as a seller, but the artisan profile is not ready yet.
-          </p>
+        <section className="flex-1 px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl rounded-3xl border border-[#E5DFD3] bg-white/70 p-8 shadow-sm">
+            <h1 className="text-3xl font-semibold text-[#2F241D]">
+              Seller Setup Incomplete
+            </h1>
 
-          <Link
-            href="/sell"
-            className="inline-block bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition"
-          >
-            Complete Seller Setup
-          </Link>
+            <p className="mt-3 text-[#6B5B4D]">
+              This account is marked as a seller, but the artisan profile is not ready yet.
+            </p>
+
+            <Link
+              href="/sell"
+              className="mt-6 inline-flex items-center rounded-full bg-[#7C5A3C] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#68492F]"
+            >
+              Complete Seller Setup
+            </Link>
+          </div>
         </section>
 
         <Footer />
@@ -141,29 +148,41 @@ export default async function ArtisanDashboardPage() {
   const products = await getArtisanProducts(artisan.id);
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="flex min-h-screen flex-col bg-[#F5F1E8]">
       <Header />
+      <Nav />
 
-      <section className="flex-1 max-w-7xl mx-auto w-full px-4 py-10">
-        <ArtisanBanner artisan={artisan} />
+      <section className="flex-1 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl space-y-10">
+          <ArtisanBanner artisan={artisan} />
 
-        <div className="flex items-center justify-between mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">My Products</h1>
-            <p className="text-gray-600 mt-1">
-              Manage the products in my inventory.
-            </p>
+          <div className="rounded-3xl border border-[#E5DFD3] bg-white/60 p-6 shadow-sm">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-sm font-medium uppercase tracking-[0.18em] text-[#8A7768]">
+                  Dashboard
+                </p>
+                <h1 className="mt-2 text-3xl font-semibold text-[#2F241D]">
+                  My Products
+                </h1>
+                <p className="mt-2 text-[#6B5B4D]">
+                  Manage the products in your inventory.
+                </p>
+              </div>
+
+              <Link
+                href="/products/new"
+                className="inline-flex items-center justify-center rounded-full bg-[#7C5A3C] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#68492F] whitespace-nowrap"
+              >
+                Add Product
+              </Link>
+            </div>
+
+            <div className="mt-8">
+              <MyProductsGrid products={products} />
+            </div>
           </div>
-
-          <Link
-            href="/products/new"
-            className="inline-block bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition whitespace-nowrap"
-          >
-            Add Product
-          </Link>
         </div>
-
-        <MyProductsGrid products={products} />
       </section>
 
       <Footer />
