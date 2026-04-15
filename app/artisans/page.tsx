@@ -27,14 +27,22 @@ export default async function ArtisansPage() {
   const artisans = await getArtisans();
 
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="flex min-h-screen flex-col bg-[#F5F1E8]">
       <Header />
       <Nav />
 
       <section className="mx-auto w-full max-w-7xl px-4 py-10">
-        <h1 className="mb-6 text-3xl font-bold md:text-4xl lg:text-5xl">
-          Artisans
-        </h1>
+        <div className="mb-8 rounded-3xl border border-[#E5DFD3] bg-white/60 p-6 shadow-sm">
+          <p className="text-sm font-medium uppercase tracking-[0.18em] text-[#8A7768]">
+            Community
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold text-[#2F241D] md:text-4xl">
+            Artisans
+          </h1>
+          <p className="mt-2 text-[#6B5B4D]">
+            Meet the makers behind the handcrafted pieces in our marketplace.
+          </p>
+        </div>
 
         {artisans.length === 0 ? (
           <p className="text-gray-500">No artisans found.</p>
