@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Serif, Baloo_2, Geist } from "next/font/google";
 import "./globals.css";
-import Providers from "@/app/components/Providers";
+import Providers from "@/app/providers";
 import { cn } from "@/app/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});

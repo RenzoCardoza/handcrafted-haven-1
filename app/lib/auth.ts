@@ -4,7 +4,17 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { sql } from "@/app/lib/db";
 
+type DbUser = {
+  id: number | string;
+  name: string | null;
+  email: string | null;
+  password: string | null;
+  role: string | null;
+};
+
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
+
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
@@ -18,11 +28,9 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
+        if (!credentials?.email || !credentials?.password) return null;
 
-        const rows = await sql`
+        const rows = await sql<DbUser[]>`
           SELECT id, name, email, password, role
           FROM users
           WHERE email = ${credentials.email}
@@ -30,34 +38,38 @@ export const authOptions: NextAuthOptions = {
         `;
 
         const user = rows[0];
-
-        if (!user || !user.password) {
-          return null;
-        }
+        if (!user || !user.password) return null;
 
         const passwordMatches = await bcrypt.compare(
           String(credentials.password),
           String(user.password)
         );
 
-        if (!passwordMatches) {
-          return null;
-        }
+        if (!passwordMatches) return null;
 
         return {
           id: String(user.id),
           name: user.name ?? "",
           email: user.email ?? "",
+          role: user.role ?? "buyer",
         };
       },
     }),
   ],
 
+  session: {
+    strategy: "jwt",
+  },
+
+  pages: {
+    signIn: "/login",
+  },
+
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "github" && user.email) {
-        const existingRows = await sql`
-          SELECT id
+        const existingRows = await sql<DbUser[]>`
+          SELECT id, name, email, role
           FROM users
           WHERE email = ${user.email}
           LIMIT 1
@@ -78,13 +90,48 @@ export const authOptions: NextAuthOptions = {
 
       return true;
     },
-  },
 
-  pages: {
-    signIn: "/login",
-  },
+    async jwt({ token, user }) {
+      // Initial sign-in
+      if (user?.email) {
+        const rows = await sql<DbUser[]>`
+          SELECT id, name, email, role
+          FROM users
+          WHERE email = ${user.email}
+          LIMIT 1
+        `;
 
-  session: {
-    strategy: "jwt",
+        const dbUser = rows[0];
+
+        if (dbUser) {
+          token.id = String(dbUser.id);
+          token.role = dbUser.role ?? "buyer";
+          token.name = dbUser.name ?? token.name;
+          token.email = dbUser.email ?? token.email;
+        }
+      }
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = String(token.id ?? "");
+        session.user.role = String(token.role ?? "buyer");
+      }
+
+      return session;
+    },
+
+    async redirect({ url, baseUrl }) {
+      // allow relative callback URLs like /user or /seller/dashboard
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+
+      // allow same-origin absolute URLs
+      if (new URL(url).origin === baseUrl) return url;
+
+      // fallback
+      return baseUrl;
+    },
   },
 };
