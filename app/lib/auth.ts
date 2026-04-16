@@ -12,6 +12,10 @@ type DbUser = {
   role: string | null;
 };
 
+function makeGitHubFallbackEmail(providerAccountId: string) {
+  return `github_${providerAccountId}@handcrafted-haven.local`;
+}
+
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 
@@ -19,6 +23,11 @@ export const authOptions: NextAuthOptions = {
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: "read:user user:email",
+        },
+      },
     }),
 
     CredentialsProvider({
@@ -63,74 +72,133 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: "/login",
+    error: "/login",
   },
 
   callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider === "github" && user.email) {
-        const existingRows = await sql<DbUser[]>`
-          SELECT id, name, email, role
-          FROM users
-          WHERE email = ${user.email}
-          LIMIT 1
-        `;
-
-        if (existingRows.length === 0) {
-          await sql`
-            INSERT INTO users (name, email, password, role)
-            VALUES (
-              ${user.name ?? "GitHub User"},
-              ${user.email},
-              '',
-              'buyer'
-            )
-          `;
-        }
-      }
-
+    async signIn() {
       return true;
     },
 
-    async jwt({ token, user }) {
-      // Initial sign-in
-      if (user?.email) {
-        const rows = await sql<DbUser[]>`
-          SELECT id, name, email, role
-          FROM users
-          WHERE email = ${user.email}
-          LIMIT 1
-        `;
+    async jwt({ token, user, account, profile }) {
+      let email = user?.email ?? token.email ?? null;
 
-        const dbUser = rows[0];
+      if (!email && account?.provider === "github" && account.access_token) {
+        try {
+          const res = await fetch("https://api.github.com/user/emails", {
+            headers: {
+              Authorization: `Bearer ${account.access_token}`,
+              Accept: "application/vnd.github+json",
+              "User-Agent": "Handcrafted-Haven",
+            },
+            cache: "no-store",
+          });
 
-        if (dbUser) {
-          token.id = String(dbUser.id);
-          token.role = dbUser.role ?? "buyer";
-          token.name = dbUser.name ?? token.name;
-          token.email = dbUser.email ?? token.email;
+          const data: unknown = await res.json();
+
+          if (Array.isArray(data)) {
+            const primaryVerified = data.find(
+              (item): item is { email?: string; primary?: boolean; verified?: boolean } =>
+                typeof item === "object" &&
+                item !== null &&
+                "email" in item &&
+                "primary" in item &&
+                "verified" in item &&
+                typeof (item as { email?: unknown }).email === "string" &&
+                (item as { primary?: boolean }).primary === true &&
+                (item as { verified?: boolean }).verified === true
+            );
+
+            const anyVerified = data.find(
+              (item): item is { email?: string; verified?: boolean } =>
+                typeof item === "object" &&
+                item !== null &&
+                "email" in item &&
+                "verified" in item &&
+                typeof (item as { email?: unknown }).email === "string" &&
+                (item as { verified?: boolean }).verified === true
+            );
+
+            email = primaryVerified?.email ?? anyVerified?.email ?? null;
+          } else {
+            console.error("GitHub emails API returned non-array:", data);
+          }
+        } catch (error) {
+          console.error("Failed to fetch GitHub email:", error);
         }
       }
+
+      // Fallback for GitHub users with no accessible email
+      if (!email && account?.provider === "github" && account.providerAccountId) {
+        email = makeGitHubFallbackEmail(account.providerAccountId);
+      }
+
+      // Also preserve fallback on later JWT calls
+      if (!email && typeof token.sub === "string") {
+        email = makeGitHubFallbackEmail(token.sub);
+      }
+
+      if (!email) {
+        return token;
+      }
+
+      const rows = await sql<DbUser[]>`
+        SELECT id, name, email, role
+        FROM users
+        WHERE email = ${email}
+        LIMIT 1
+      `;
+
+      let dbUser = rows[0];
+
+      if (!dbUser) {
+        const displayName =
+          user?.name ??
+          token.name ??
+          (profile && typeof profile === "object" && "name" in profile
+            ? String((profile as { name?: unknown }).name ?? "")
+            : "") ??
+          "GitHub User";
+
+        const insertedRows = await sql<DbUser[]>`
+          INSERT INTO users (name, email, password, role)
+          VALUES (
+            ${displayName || "GitHub User"},
+            ${email},
+            '',
+            'buyer'
+          )
+          RETURNING id, name, email, role
+        `;
+
+        dbUser = insertedRows[0];
+      }
+
+      token.id = String(dbUser.id);
+      token.role = dbUser.role ?? "buyer";
+      token.email = dbUser.email ?? email;
+      token.name = dbUser.name ?? token.name;
 
       return token;
     },
 
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = String(token.id ?? "");
-        session.user.role = String(token.role ?? "buyer");
+        session.user.id = typeof token.id === "string" ? token.id : "";
+        session.user.role =
+          typeof token.role === "string" ? token.role : "buyer";
+        session.user.email =
+          typeof token.email === "string"
+            ? token.email
+            : session.user.email;
       }
 
       return session;
     },
 
     async redirect({ url, baseUrl }) {
-      // allow relative callback URLs like /user or /seller/dashboard
       if (url.startsWith("/")) return `${baseUrl}${url}`;
-
-      // allow same-origin absolute URLs
       if (new URL(url).origin === baseUrl) return url;
-
-      // fallback
       return baseUrl;
     },
   },
