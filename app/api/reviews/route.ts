@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
 import { z } from "zod/v4";
 import { sql } from "@/app/lib/db";
 
@@ -10,7 +11,7 @@ const reviewSchema = z.object({
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return Response.json(
